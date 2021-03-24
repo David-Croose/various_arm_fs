@@ -11,7 +11,8 @@ if [ $(whoami) != root ]; then
 fi
 
 echo '================================================================================'
-echo 'please enter the block device name:'
+echo "please enter the block device name or inputing 'Enter' directly if you don't"
+echo "need to burn the block device:"
 echo '    e.g. /dev/sdb2'
 read BLKDEV
 
@@ -49,15 +50,19 @@ echo 'please enter the path to hold the filesystem:'
 read FSPATH
 
 echo '================================================================================'
-echo 'preparing misc...'
+echo 'clearing items...'
+set +e
 rm -rf $FSPATH
 mkdir -p $FSPATH 
 FSPATH=$FSPATH/$FSNAME
 
-rm -rf $TMPMNT
-mkdir -p $TMPMNT
-umount $BLKDEV
-mount $BLKDEV $TMPMNT
+if [ -n "$BLKDEV" ]; then
+	rm -rf $TMPMNT
+	mkdir -p $TMPMNT
+	umount $BLKDEV
+	mount $BLKDEV $TMPMNT
+fi
+set -e
 
 echo '================================================================================'
 echo 'processing the linaro debian...'
@@ -70,6 +75,8 @@ fi
 echo '================================================================================'
 echo 'processing the official debian...'
 apt-get install binfmt-support qemu qemu-user-static debootstrap
+# ignore this log:
+# W: Cannot check Release signature; keyring file not available /usr/share/keyrings/debian-archive-keyring.gpg
 debootstrap --arch=armel --foreign $DEBALIAS $FSPATH $HTTPSRC
 cp /usr/bin/qemu-arm-static $FSPATH/usr/bin
 DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true LC_ALL=C LANGUAGE=C LANG=C chroot $FSPATH debootstrap/debootstrap --second-stage
@@ -79,8 +86,8 @@ echo "proc /proc proc defaults 0 0" >> $FSPATH/etc/fstab
 mkdir -p $FSPATH/usr/share/man/man1/
 mknod $FSPATH/dev/console c 5 1
 
-cp $FSPATH/etc/apt/source.list $FSPATH/etc/apt/source.list.bak
-echo "deb $APTSRC buster main" > $FSPATH//etc/apt/sources.list
+cp $FSPATH/etc/apt/sources.list $FSPATH/etc/apt/sources.list.bak
+echo "deb $APTSRC buster main" > $FSPATH/etc/apt/sources.list
 
 cat > $FSPATH/init_fs.sh << EOF
 #!bin/sh
@@ -89,12 +96,18 @@ apt-get update
 apt-get install wpasupplicant udhcpc net-tools
 echo 'these packages is recommanded:'
 echo '    openssh-server git build-essential samba samba-common-bin nfs-kernel-server'
-echo '    xinetd tftp tftpd xfce4 dos2unix vim ctags'
+echo '    xinetd tftp tftpd xfce4 dos2unix vim ctags unzip p7zip unrar'
 echo 'now you should install softwares you need by apt-get then exit'
 EOF
 chmod +x $FSPATH/init_fs.sh
 
 echo 'now typing ./init_fs.sh'
 chroot $FSPATH
+
+if [ -n "$BLKDEV" ]; then
+	umount $BLKDEV
+	rm -rf $TMPMNT
+	sync
+fi
 
 echo 'done'
