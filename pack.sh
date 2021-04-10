@@ -193,8 +193,10 @@ elif [ "$CONFIG_LINARO_DEBIAN_ENABLE" = y ]; then
 		exit 0
 	fi
 
-	echo "retrieving linaro-debian fs..."
-	wget -P dl $CONFIG_LINARO_DEBIAN_SRC
+	if [ ! -f $CONFIG_LINARO_DEBIAN_DL ]; then
+		echo "retrieving linaro-debian fs..."
+		wget -P dl $CONFIG_LINARO_DEBIAN_SRC
+	fi
 	tar -xf $CONFIG_LINARO_DEBIAN_DL -C $CONFIG_LINARO_DEBIAN_FOLDER
 
 	debian_modify linaro $CONFIG_LINARO_DEBIAN_FOLDER
@@ -222,8 +224,8 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	if [ ! -f $CONFIG_UBUNTU_DL ]; then
 		echo "retrieving ubuntu fs..."
 		wget -P dl $CONFIG_UBUNTU_SRC
-		tar -xf $CONFIG_UBUNTU_DL -C $CONFIG_UBUNTU_FOLDER
 	fi
+	tar -xf $CONFIG_UBUNTU_DL -C $CONFIG_UBUNTU_FOLDER
 
 	echo "preparing the serial console..."
 	cat > $CONFIG_UBUNTU_FOLDER/etc/init/ttyS0.conf <<- EOF
