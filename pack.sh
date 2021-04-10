@@ -75,7 +75,7 @@ debian_modify()
 	local DESTFOLDER=$2	# debian source path
 
 	echo 'installing essential packages...'
-	apt install binfmt-support qemu qemu-user-static debootstrap multistrap # TODO  --yes
+	apt --yes install binfmt-support qemu qemu-user-static debootstrap multistrap
 
 	if [ "$TYPE" = official ]; then
 		echo "retrieving official-debian fs..."
@@ -107,8 +107,8 @@ debian_modify()
 			$CONFIG_ROOT_PASSWD
 			$CONFIG_ROOT_PASSWD
 		EOF
-		apt-get update
-		apt-get install $CONFIG_DEBIAN_DEFAULT_SW
+		apt update
+		apt --yes install $CONFIG_DEBIAN_DEFAULT_SW
 	EOT
 
 	echo "setting logging permission of root in ssh..."
@@ -234,7 +234,7 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	EOF
 
 	echo 'installing essential packages...'
-	apt install qemu-user-static  # TODO --yes
+	apt --yes install qemu-user-static
 	cp /usr/bin/qemu-arm-static $CONFIG_UBUNTU_FOLDER/usr/bin
 
 	echo "generating apt source.list in china..."
@@ -260,8 +260,8 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 			$CONFIG_ROOT_PASSWD
 			$CONFIG_ROOT_PASSWD
 		EOF
-		apt-get update
-		apt-get install $CONFIG_UBUNTU_DEFAULT_SW
+		apt update
+		apt --yes install $CONFIG_UBUNTU_DEFAULT_SW
 	EOT
 	umnt $CONFIG_UBUNTU_FOLDER
 
