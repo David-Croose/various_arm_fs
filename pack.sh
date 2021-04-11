@@ -197,7 +197,9 @@ elif [ "$CONFIG_LINARO_DEBIAN_ENABLE" = y ]; then
 		echo "retrieving linaro-debian fs..."
 		wget -P dl $CONFIG_LINARO_DEBIAN_SRC
 	fi
+	mkdir -p $CONFIG_LINARO_DEBIAN_FOLDER
 	tar -xf $CONFIG_LINARO_DEBIAN_DL -C $CONFIG_LINARO_DEBIAN_FOLDER
+	CONFIG_LINARO_DEBIAN_FOLDER=$CONFIG_LINARO_DEBIAN_FOLDER/binary
 
 	debian_modify linaro $CONFIG_LINARO_DEBIAN_FOLDER
 	tar -cf $CONFIG_LINARO_DEBIAN_OUTPUT $CONFIG_LINARO_DEBIAN_FOLDER
@@ -210,6 +212,7 @@ elif [ "$CONFIG_OFFICIAL_DEBIAN_ENABLE" = y ]; then
 		exit 0
 	fi
 
+	mkdir -p $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	debian_modify official $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	tar -cf $CONFIG_OFFICIAL_DEBIAN_OUTPUT $CONFIG_OFFICIAL_DEBIAN_FOLDER
 
@@ -225,6 +228,7 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 		echo "retrieving ubuntu fs..."
 		wget -P dl $CONFIG_UBUNTU_SRC
 	fi
+	mkdir -p $CONFIG_UBUNTU_FOLDER
 	tar -xf $CONFIG_UBUNTU_DL -C $CONFIG_UBUNTU_FOLDER
 
 	echo "preparing the serial console..."
