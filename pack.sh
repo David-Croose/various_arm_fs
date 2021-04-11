@@ -8,6 +8,7 @@ CONFIG_BUILDROOT_OUTPUT=output/buildrootfs.tar
 CONFIG_UBUNTU_ENABLE=
 CONFIG_UBUNTU_APT_SOURCE=http://mirrors.ustc.edu.cn/ubuntu-ports/
 CONFIG_UBUNTU_DEFAULT_SW='sudo ssh net-tools wireless-tools ifupdown network-manager iputils-ping bash-completion wpasupplicant udhcpc'
+CONFIG_UBUNTU_ALIAS=xenial
 CONFIG_UBUNTU=ubuntu-base-16.04.6-base-armhf.tar.gz
 CONFIG_UBUNTU_SRC=http://cdimage.ubuntu.com/ubuntu-base/releases/16.04.1/release/$CONFIG_UBUNTU
 CONFIG_UBUNTU_FOLDER=tmp/ubuntu-base-16.04.6
@@ -253,16 +254,16 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	echo "generating apt source.list in china..."
 	mv $CONFIG_UBUNTU_FOLDER/etc/apt/sources.list $CONFIG_UBUNTU_FOLDER/etc/apt/sources.list.bak
 	cat > $CONFIG_UBUNTU_FOLDER/etc/apt/sources.list <<- EOF
-		deb $CONFIG_UBUNTU_APT_SOURCE xenial main multiverse restricted universe
-		deb $CONFIG_UBUNTU_APT_SOURCE xenial-backports main multiverse restricted universe
-		deb $CONFIG_UBUNTU_APT_SOURCE xenial-proposed main multiverse restricted universe
-		deb $CONFIG_UBUNTU_APT_SOURCE xenial-security main multiverse restricted universe
-		deb $CONFIG_UBUNTU_APT_SOURCE xenial-updates main multiverse restricted universe
-		deb-src $CONFIG_UBUNTU_APT_SOURCE xenial main multiverse restricted universe
-		deb-src $CONFIG_UBUNTU_APT_SOURCE xenial-backports main multiverse restricted universe
-		deb-src $CONFIG_UBUNTU_APT_SOURCE xenial-proposed main multiverse restricted universe
-		deb-src $CONFIG_UBUNTU_APT_SOURCE xenial-security main multiverse restricted universe
-		deb-src $CONFIG_UBUNTU_APT_SOURCE xenial-updates main multiverse restricted universe
+		deb $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS main multiverse restricted universe
+		deb $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-backports main multiverse restricted universe
+		deb $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-proposed main multiverse restricted universe
+		deb $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-security main multiverse restricted universe
+		deb $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-updates main multiverse restricted universe
+		deb-src $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS main multiverse restricted universe
+		deb-src $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-backports main multiverse restricted universe
+		deb-src $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-proposed main multiverse restricted universe
+		deb-src $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-security main multiverse restricted universe
+		deb-src $CONFIG_UBUNTU_APT_SOURCE $CONFIG_UBUNTU_ALIAS-updates main multiverse restricted universe
 	EOF
 
 	echo "chroot into ubuntu fs, this could take a big while..."
