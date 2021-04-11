@@ -7,7 +7,7 @@ CONFIG_BUILDROOT_OUTPUT=output/buildrootfs.tar
 # ubuntu
 CONFIG_UBUNTU_ENABLE=
 CONFIG_UBUNTU_APT_SOURCE=https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/
-CONFIG_UBUNTU_DEFAULT_SW='language-pack-en-base sudo ssh net-tools wireless-tools ifupdown network-manager iputils-ping bash-completion wpasupplicant udhcpc'
+CONFIG_UBUNTU_DEFAULT_SW='sudo ssh net-tools wireless-tools ifupdown network-manager iputils-ping bash-completion wpasupplicant udhcpc'
 CONFIG_UBUNTU=ubuntu-base-16.04.6-base-armhf.tar.gz
 CONFIG_UBUNTU_SRC=http://cdimage.ubuntu.com/ubuntu-base/releases/16.04.1/release/$CONFIG_UBUNTU
 CONFIG_UBUNTU_FOLDER=tmp/ubuntu-base-16.04.6
@@ -24,11 +24,11 @@ CONFIG_LINARO_DEBIAN_OUTPUT=output/$CONFIG_LINARO_DEBIAN
 
 CONFIG_OFFICIAL_DEBIAN_ENABLE=
 CONFIG_OFFICIAL_DEBIAN_ALIAS=stretch  # 10:buster 9:stretch 8:jessie
-CONFIG_OFFICIAL_DEBIAN_FOLDER=tmp/debian_$stretch_src
+CONFIG_OFFICIAL_DEBIAN_FOLDER=tmp/debian_$CONFIG_OFFICIAL_DEBIAN_ALIAS
 CONFIG_OFFICIAL_DEBIAN_SRC=https://mirrors.tuna.tsinghua.edu.cn/debian/
 CONFIG_OFFICIAL_DEBIAN_OUTPUT=output/debian_$CONFIG_OFFICIAL_DEBIAN_ALIAS.tar.bz2
 
-CONFIG_DEBIAN_APT_SOURCE=https://mirrors.tuna.tsinghua.edu.cn/debian/
+CONFIG_DEBIAN_APT_SOURCE=http://mirrors.ustc.edu.cn/debian/  # debian may not support https
 CONFIG_DEBIAN_DEFAULT_SW=$CONFIG_UBUNTU_DEFAULT_SW
 
 # users
@@ -98,10 +98,15 @@ debian_modify()
 
 	echo "generating apt source.list in china..."
 	cp $DESTFOLDER/etc/apt/sources.list $DESTFOLDER/etc/apt/sources.list.bak
-	echo "deb $CONFIG_DEBIAN_APT_SOURCE $CONFIG_OFFICIAL_DEBIAN_ALIAS main" > $DESTFOLDER/etc/apt/sources.list
+	if [ "$TYPE" = official ]; then
+		echo "deb $CONFIG_DEBIAN_APT_SOURCE $CONFIG_OFFICIAL_DEBIAN_ALIAS main" > $DESTFOLDER/etc/apt/sources.list
+	else
+		TMP_APT_SOURCE=$(echo $CONFIG_DEBIAN_APT_SOURCE | sed 's/\//\\\//g')
+		sed -i /security/d $DESTFOLDER/etc/apt/sources.list
+		sed -i "s/http:\/\/http.debian.net\/debian\//$TMP_APT_SOURCE/g" $DESTFOLDER/etc/apt/sources.list
+	fi
 
 	echo "chroot into official debian fs, this could take a big while..."
-	cp /etc/resolv.conf $DESTFOLDER/etc/resolv.conf
 	chroot $DESTFOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
@@ -116,7 +121,6 @@ debian_modify()
 
 	echo "generating official debian image..."
 	rm -f $DESTFOLDER/usr/bin/qemu-arm-static
-	echo > $DESTFOLDER/etc/resolv.conf
 }
 
 extract_rootfs()
@@ -197,6 +201,7 @@ elif [ "$CONFIG_LINARO_DEBIAN_ENABLE" = y ]; then
 		echo "retrieving linaro-debian fs..."
 		wget -P dl $CONFIG_LINARO_DEBIAN_SRC
 	fi
+	rm -rf $CONFIG_LINARO_DEBIAN_FOLDER
 	mkdir -p $CONFIG_LINARO_DEBIAN_FOLDER
 	tar -xf $CONFIG_LINARO_DEBIAN_DL -C $CONFIG_LINARO_DEBIAN_FOLDER
 	CONFIG_LINARO_DEBIAN_FOLDER=$CONFIG_LINARO_DEBIAN_FOLDER/binary
@@ -212,6 +217,7 @@ elif [ "$CONFIG_OFFICIAL_DEBIAN_ENABLE" = y ]; then
 		exit 0
 	fi
 
+	rm -rf $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	mkdir -p $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	debian_modify official $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	tar -cf $CONFIG_OFFICIAL_DEBIAN_OUTPUT $CONFIG_OFFICIAL_DEBIAN_FOLDER
@@ -228,6 +234,7 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 		echo "retrieving ubuntu fs..."
 		wget -P dl $CONFIG_UBUNTU_SRC
 	fi
+	rm -rf $CONFIG_UBUNTU_FOLDER
 	mkdir -p $CONFIG_UBUNTU_FOLDER
 	tar -xf $CONFIG_UBUNTU_DL -C $CONFIG_UBUNTU_FOLDER
 
@@ -260,7 +267,6 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 
 	echo "chroot into ubuntu fs, this could take a big while..."
 	mnt $CONFIG_UBUNTU_FOLDER
-	cp /etc/resolv.conf $CONFIG_UBUNTU_FOLDER/etc/resolv.conf
 	chroot $CONFIG_UBUNTU_FOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
@@ -283,7 +289,6 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 
 	echo "generating ubuntu image..."
 	rm -f $CONFIG_UBUNTU_FOLDER/usr/bin/qemu-arm-static
-	echo > $CONFIG_UBUNTU_FOLDER/etc/resolv.conf
 	tar -cf $CONFIG_UBUNTU_OUTPUT $CONFIG_UBUNTU_FOLDER
 fi
 
