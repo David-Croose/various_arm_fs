@@ -135,6 +135,7 @@ extract_rootfs()
 
 ###########################################################################################
 
+HOME=$PWD
 USERCONFIG=config
 TMPMNT=mnt
 
@@ -185,7 +186,7 @@ if [ "$CONFIG_BUILDROOT_ENABLE" = y ]; then
 		echo "done"
 		exit 0
 	else
-		echo "error, the file: $CONFIG_BUILDROOT_OUTPUT should be existence."
+		echo "error, the file: $CONFIG_BUILDROOT_OUTPUT does not existence."
 		exit 5
 	fi
 
@@ -207,7 +208,13 @@ elif [ "$CONFIG_LINARO_DEBIAN_ENABLE" = y ]; then
 	CONFIG_LINARO_DEBIAN_FOLDER=$CONFIG_LINARO_DEBIAN_FOLDER/binary
 
 	debian_modify linaro $CONFIG_LINARO_DEBIAN_FOLDER
-	tar -cf $CONFIG_LINARO_DEBIAN_OUTPUT $CONFIG_LINARO_DEBIAN_FOLDER
+
+	echo "generating linaro debian image..."
+	SRCPATH=$(find $CONFIG_LINARO_DEBIAN_FOLDER -type d -name proc | xargs dirname)
+	cd $SRCPATH
+	tar -cf $CONFIG_LINARO_DEBIAN_OUTPUT *
+	cd $HOME
+	mv $SRCPATH/$CONFIG_LINARO_DEBIAN_OUTPUT output
 
 elif [ "$CONFIG_OFFICIAL_DEBIAN_ENABLE" = y ]; then
 	if [ -f $CONFIG_OFFICIAL_DEBIAN_OUTPUT ]; then
@@ -220,7 +227,13 @@ elif [ "$CONFIG_OFFICIAL_DEBIAN_ENABLE" = y ]; then
 	rm -rf $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	mkdir -p $CONFIG_OFFICIAL_DEBIAN_FOLDER
 	debian_modify official $CONFIG_OFFICIAL_DEBIAN_FOLDER
-	tar -cf $CONFIG_OFFICIAL_DEBIAN_OUTPUT $CONFIG_OFFICIAL_DEBIAN_FOLDER
+
+	echo "generating official debian image..."
+	SRCPATH=$(find $CONFIG_OFFICIAL_DEBIAN_FOLDER -type d -name proc | xargs dirname)
+	cd $SRCPATH
+	tar -cf $CONFIG_OFFICIAL_DEBIAN_OUTPUT *
+	cd $HOME
+	mv $SRCPATH/$CONFIG_OFFICIAL_DEBIAN_OUTPUT output
 
 elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	if [ -f $CONFIG_UBUNTU_OUTPUT ]; then
@@ -291,7 +304,11 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	echo "generating ubuntu image..."
 	rm -f $CONFIG_UBUNTU_FOLDER/etc/resolv.conf
 	rm -f $CONFIG_UBUNTU_FOLDER/usr/bin/qemu-arm-static
-	tar -cf $CONFIG_UBUNTU_OUTPUT $CONFIG_UBUNTU_FOLDER  # TODO  is that root?
+	SRCPATH=$(find $CONFIG_UBUNTU_FOLDER -type d -name proc | xargs dirname)
+	cd $SRCPATH
+	tar -cf $CONFIG_UBUNTU_OUTPUT *
+	cd $HOME
+	mv $SRCPATH/$CONFIG_UBUNTU_OUTPUT output
 fi
 
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
