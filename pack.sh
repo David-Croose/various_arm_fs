@@ -13,7 +13,7 @@ CONFIG_UBUNTU=ubuntu-base-16.04.6-base-armhf.tar.gz
 CONFIG_UBUNTU_SRC=http://cdimage.ubuntu.com/ubuntu-base/releases/16.04.1/release/$CONFIG_UBUNTU
 CONFIG_UBUNTU_FOLDER=tmp/ubuntu-base-16.04.6
 CONFIG_UBUNTU_DL=dl/$CONFIG_UBUNTU
-CONFIG_UBUNTU_OUTPUT=output/$ubuntu-base-16.04.6-base-armhf.tar.bz2
+CONFIG_UBUNTU_OUTPUT=output/ubuntu-base-16.04.6-base-armhf.tar.bz2
 
 # debian
 CONFIG_LINARO_DEBIAN_ENABLE=
@@ -39,17 +39,16 @@ CONFIG_ROOT_PASSWD=123
 CONFIG_ROOTFS_BLKDEV=
 ###########################################################################################
 
-function mnt()
+function mnt2()
 {
     echo "MOUNTING"
     mount -t proc  /proc    ${1}/proc
     mount -t sysfs /sys     ${1}/sys
     mount -o bind  /dev     ${1}/dev
     mount -o bind  /dev/pts ${1}/dev/pts
-    chroot ${1}
 }
 
-function umnt()
+function umnt2()
 {
     echo "UNMOUNTING"
     umount ${1}/proc
@@ -267,7 +266,8 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	EOF
 
 	echo "chroot into ubuntu fs, this could take a big while..."
-	mnt $CONFIG_UBUNTU_FOLDER
+	cp /etc/resolv.conf $CONFIG_UBUNTU_FOLDER/etc/resolv.conf
+	mnt2 $CONFIG_UBUNTU_FOLDER
 	chroot $CONFIG_UBUNTU_FOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
@@ -276,7 +276,7 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 		apt update
 		apt --yes install $CONFIG_UBUNTU_DEFAULT_SW
 	EOT
-	umnt $CONFIG_UBUNTU_FOLDER
+	umnt2 $CONFIG_UBUNTU_FOLDER
 
 	echo "setting logging permission of root in ssh..."
 	sed -i 's/^PermitRootLogin prohibit-password/#PermitRootLogin prohibit-password/' $CONFIG_UBUNTU_FOLDER/etc/ssh/sshd_config
@@ -289,8 +289,9 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	echo "127.0.0.1 ubuntu" >> $CONFIG_UBUNTU_FOLDER/etc/hosts
 
 	echo "generating ubuntu image..."
+	rm -f $CONFIG_UBUNTU_FOLDER/etc/resolv.conf
 	rm -f $CONFIG_UBUNTU_FOLDER/usr/bin/qemu-arm-static
-	tar -cf $CONFIG_UBUNTU_OUTPUT $CONFIG_UBUNTU_FOLDER
+	tar -cf $CONFIG_UBUNTU_OUTPUT $CONFIG_UBUNTU_FOLDER  # TODO  is that root?
 fi
 
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
