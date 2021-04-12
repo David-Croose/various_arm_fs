@@ -39,7 +39,7 @@ CONFIG_ROOT_PASSWD=123
 CONFIG_ROOTFS_BLKDEV=
 ###########################################################################################
 
-function mnt2()
+mnt2()
 {
     echo "MOUNTING"
     mount -t proc  /proc    ${1}/proc
@@ -48,7 +48,7 @@ function mnt2()
     mount -o bind  /dev/pts ${1}/dev/pts
 }
 
-function umnt2()
+umnt2()
 {
     echo "UNMOUNTING"
     umount ${1}/proc
