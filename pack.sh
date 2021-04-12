@@ -212,9 +212,8 @@ elif [ "$CONFIG_LINARO_DEBIAN_ENABLE" = y ]; then
 	echo "generating linaro debian image..."
 	SRCPATH=$(find $CONFIG_LINARO_DEBIAN_FOLDER -type d -name proc | xargs dirname)
 	cd $SRCPATH
-	tar -cf $CONFIG_LINARO_DEBIAN_OUTPUT *
+	tar -cf $HOME/$CONFIG_LINARO_DEBIAN_OUTPUT *
 	cd $HOME
-	mv $SRCPATH/$CONFIG_LINARO_DEBIAN_OUTPUT output
 
 elif [ "$CONFIG_OFFICIAL_DEBIAN_ENABLE" = y ]; then
 	if [ -f $CONFIG_OFFICIAL_DEBIAN_OUTPUT ]; then
@@ -231,9 +230,8 @@ elif [ "$CONFIG_OFFICIAL_DEBIAN_ENABLE" = y ]; then
 	echo "generating official debian image..."
 	SRCPATH=$(find $CONFIG_OFFICIAL_DEBIAN_FOLDER -type d -name proc | xargs dirname)
 	cd $SRCPATH
-	tar -cf $CONFIG_OFFICIAL_DEBIAN_OUTPUT *
+	tar -cf $HOME/$CONFIG_OFFICIAL_DEBIAN_OUTPUT *
 	cd $HOME
-	mv $SRCPATH/$CONFIG_OFFICIAL_DEBIAN_OUTPUT output
 
 elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	if [ -f $CONFIG_UBUNTU_OUTPUT ]; then
@@ -306,9 +304,8 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	rm -f $CONFIG_UBUNTU_FOLDER/usr/bin/qemu-arm-static
 	SRCPATH=$(find $CONFIG_UBUNTU_FOLDER -type d -name proc | xargs dirname)
 	cd $SRCPATH
-	tar -cf $CONFIG_UBUNTU_OUTPUT *
+	tar -cf $HOME/$CONFIG_UBUNTU_OUTPUT *
 	cd $HOME
-	mv $SRCPATH/$CONFIG_UBUNTU_OUTPUT output
 fi
 
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
