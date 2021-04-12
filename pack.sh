@@ -106,7 +106,7 @@ debian_modify()
 		sed -i "s/http:\/\/http.debian.net\/debian\//$TMP_APT_SOURCE/g" $DESTFOLDER/etc/apt/sources.list
 	fi
 
-	echo "chroot into official debian fs, this could take a big while..."
+	echo "chroot into debian fs, this could take a big while..."
 	chroot $DESTFOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
@@ -119,7 +119,7 @@ debian_modify()
 	echo "setting logging permission of root in ssh..."
 	echo "PermitRootLogin yes" >> $DESTFOLDER/etc/ssh/sshd_config
 
-	echo "generating official debian image..."
+	echo "removing useless files..."
 	rm -f $DESTFOLDER/usr/bin/qemu-arm-static
 }
 
