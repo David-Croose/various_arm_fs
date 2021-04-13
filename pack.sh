@@ -132,7 +132,7 @@ extract_rootfs()
 		local DESTPATH=$2
 
 		tar -xmf $SRC -C $DESTPATH
-		umout_all $CONFIG_ROOTFS_BLKDEV
+		umout_all
 		rm -rf $TMPMNT
 	fi
 }
@@ -176,7 +176,7 @@ fi
 echo "====================================================================================="
 echo "preparing output file..."
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
-	umout_all $CONFIG_ROOTFS_BLKDEV
+	umout_all
 	rm -rf $TMPMNT
 	mkdir -p $TMPMNT
 	mount $CONFIG_ROOTFS_BLKDEV $TMPMNT
@@ -315,7 +315,7 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 fi
 
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
-	umout_all $CONFIG_ROOTFS_BLKDEV
+	umout_all
 	rm -rf $TMPMNT
 fi
 
