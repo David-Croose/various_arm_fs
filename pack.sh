@@ -26,7 +26,7 @@ CONFIG_LINARO_DEBIAN_OUTPUT=output/$CONFIG_LINARO_DEBIAN
 CONFIG_OFFICIAL_DEBIAN_ENABLE=
 CONFIG_OFFICIAL_DEBIAN_ALIAS=stretch  # 10:buster 9:stretch 8:jessie
 CONFIG_OFFICIAL_DEBIAN_FOLDER=tmp/debian_$CONFIG_OFFICIAL_DEBIAN_ALIAS
-CONFIG_OFFICIAL_DEBIAN_SRC=https://mirrors.tuna.tsinghua.edu.cn/debian/
+CONFIG_OFFICIAL_DEBIAN_SRC=http://mirrors.ustc.edu.cn/debian/
 CONFIG_OFFICIAL_DEBIAN_OUTPUT=output/debian_$CONFIG_OFFICIAL_DEBIAN_ALIAS.tar.bz2
 
 CONFIG_DEBIAN_APT_SOURCE=http://mirrors.ustc.edu.cn/debian/  # debian may not support https
@@ -107,6 +107,7 @@ debian_modify()
 	fi
 
 	echo "chroot into debian fs, this could take a big while..."
+	mnt2 $DESTFOLDER
 	chroot $DESTFOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
@@ -115,6 +116,7 @@ debian_modify()
 		apt update
 		apt --yes install $CONFIG_DEBIAN_DEFAULT_SW
 	EOT
+	umnt2 $DESTFOLDER
 
 	echo "setting logging permission of root in ssh..."
 	echo "PermitRootLogin yes" >> $DESTFOLDER/etc/ssh/sshd_config
