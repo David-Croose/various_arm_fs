@@ -173,8 +173,9 @@ echo "==========================================================================
 echo "preparing output file..."
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
 	umout_all $CONFIG_ROOTFS_BLKDEV
+	rm -rf $TMPMNT
+	mkdir -p $TMPMNT
 	mount $CONFIG_ROOTFS_BLKDEV $TMPMNT
-	rm -rf $TMPMNT/*
 fi
 
 echo "====================================================================================="
