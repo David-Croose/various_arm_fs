@@ -131,7 +131,9 @@ extract_rootfs()
 		local SRC=$1
 		local DESTPATH=$2
 
-		tar -xf $SRC -C $DESTPATH
+		tar -xmf $SRC -C $DESTPATH
+		umout_all $CONFIG_ROOTFS_BLKDEV
+		rm -rf $TMPMNT
 	fi
 }
 
@@ -178,6 +180,7 @@ if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
 	rm -rf $TMPMNT
 	mkdir -p $TMPMNT
 	mount $CONFIG_ROOTFS_BLKDEV $TMPMNT
+	rm -rf $TMPMNT/*
 fi
 
 echo "====================================================================================="
@@ -313,7 +316,7 @@ fi
 
 if [ -n "$CONFIG_ROOTFS_BLKDEV" ]; then
 	umout_all $CONFIG_ROOTFS_BLKDEV
-	rm -rf $TMPMNT/*
+	rm -rf $TMPMNT
 fi
 
 echo "done"
