@@ -108,7 +108,7 @@ debian_modify()
 
 	echo "chroot into debian fs, this could take a big while..."
 	mnt2 $DESTFOLDER
-	chroot $DESTFOLDER /bin/bash <<- EOT
+	DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true LC_ALL=C LANGUAGE=C LANG=C chroot $DESTFOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
 			$CONFIG_ROOT_PASSWD
@@ -285,7 +285,7 @@ elif [ "$CONFIG_UBUNTU_ENABLE" = y ]; then
 	echo "chroot into ubuntu fs, this could take a big while..."
 	cp /etc/resolv.conf $CONFIG_UBUNTU_FOLDER/etc/resolv.conf
 	mnt2 $CONFIG_UBUNTU_FOLDER
-	LC_ALL=C LANGUAGE=C LANG=C chroot $CONFIG_UBUNTU_FOLDER /bin/bash <<- EOT
+	DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true LC_ALL=C LANGUAGE=C LANG=C chroot $CONFIG_UBUNTU_FOLDER /bin/bash <<- EOT
 		passwd root <<- EOF
 			$CONFIG_ROOT_PASSWD
 			$CONFIG_ROOT_PASSWD
