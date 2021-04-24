@@ -7,7 +7,7 @@ CONFIG_BUILDROOT_OUTPUT=output/buildrootfs.tar
 # ubuntu
 CONFIG_UBUNTU_ENABLE=
 CONFIG_UBUNTU_APT_SOURCE=http://mirrors.ustc.edu.cn/ubuntu-ports/
-CONFIG_UBUNTU_DEFAULT_SW='sudo ssh net-tools wireless-tools ifupdown network-manager iputils-ping bash-completion wpasupplicant udhcpc'
+CONFIG_UBUNTU_DEFAULT_SW='dialog apt-utils sudo kmod ssh net-tools wireless-tools ifupdown network-manager iputils-ping bash-completion wpasupplicant udhcpc vim'
 CONFIG_UBUNTU_ALIAS=xenial
 CONFIG_UBUNTU=ubuntu-base-16.04.6-base-armhf.tar.gz
 CONFIG_UBUNTU_SRC=http://cdimage.ubuntu.com/ubuntu-base/releases/16.04.1/release/$CONFIG_UBUNTU
